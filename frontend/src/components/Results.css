@@ -1,0 +1,23 @@
+/* src/components/Results.css */
+
+.results-container {
+    margin-top: 20px;
+  }
+  
+  .result-section {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .result-pane {
+    width: 60%;
+  }
+  
+  .technical-pane {
+    width: 35%;
+  }
+  
+  .feedback {
+    margin-top: 10px;
+  }
+  
