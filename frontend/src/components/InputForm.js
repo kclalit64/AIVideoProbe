@@ -1,7 +1,7 @@
 // src/components/InputForm.js
 
 import React, { useState } from 'react';
-import './InputForm.css'; // Import the CSS file for styling
+import './InputForm.css'; 
 
 const InputForm = () => {
   // State for form inputs
@@ -13,12 +13,12 @@ const InputForm = () => {
   // Function to handle form submission
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Add logic to handle form submission (send data to backend, etc.)
+    // Add logic for backend
   };
 
   return (
     <div className="input-form-container">
-      <h2>Let's </h2>
+      <h2>Let's Get You Ready!</h2>
       <form onSubmit={handleSubmit}>
         <label>
           Your Name:

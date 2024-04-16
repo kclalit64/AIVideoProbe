@@ -2,8 +2,8 @@
 
 import React from 'react';
 import InputForm from './components/InputForm';
-import VideoWindow from './components/VideoWindow'; // Import the VideoWindow component
-import Results from './components/Results'; // Import the Results component
+import VideoWindow from './components/VideoWindow'; 
+import Results from './components/Results';
 import './App.css';
 
 const App = () => {
@@ -15,9 +15,8 @@ const App = () => {
       </header>
       <main>
         <InputForm />
-        <VideoWindow /> {/* Include the VideoWindow component */}
-        <Results /> {/* Include the Results component */}
-        {/* Add other components here if needed */}
+        <VideoWindow /> 
+        <Results />
       </main>
       <footer>
         <p>&copy; 2024 InterviewForge. All rights reserved by <a href="https://saastalent.co/">SaaSTalent</a>.</p>

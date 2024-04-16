@@ -1,10 +1,10 @@
 // src/components/Results.js
 
 import React, { useState } from 'react';
-import './Results.css'; // Import the CSS file for styling
+import './Results.css';
 
 const Results = () => {
-  // Mock data (replace this with actual API integration)
+  // Mock data 
   const technicalResults = [
     { skill: 'Reactjs', score: 90, feedback: 'You were good with React basics...' },
     // Add more skills and results as needed
@@ -57,7 +57,7 @@ const Results = () => {
                 </div>
               ))}
             </div>
-            {/* Add similar structures for other sections */}
+            
           </section>
         </div>
       )}

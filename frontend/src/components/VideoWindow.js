@@ -12,7 +12,6 @@ const VideoWindow = () => {
       </div>
       <div className="user-video">
         {/* Placeholder for user's self-reflection video */}
-        {/* You can use HTML5 video tag or any other video component here */}
         <video controls>
           <source src="path/to/user-video.mp4" type="video/mp4" />
           Your browser does not support the video tag.
