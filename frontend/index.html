@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Interview</title>
+</head>
+<body>
+    <h1>Virtual Interview</h1>
+    <button id="startBtn" onclick="startInterview()">Start Interview</button>
+
+    <div id="questionBox" class="hidden">
+        <p id="question"></p>
+        <textarea id="response"></textarea>
+        <button onclick="submitResponse()">Submit Response</button>
+    </div>
+
+    <div id="feedbackBox" class="hidden">
+        <p id="feedback"></p>
+    </div>
+
+    <div id="finalQuestions" class="hidden">
+        <p id="finalQuestion"></p>
+    </div>
+    
+    
+    <script>
+        function startInterview() {
+            fetch('/start')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('question').innerText = data.question;
+                    document.getElementById('questionBox').classList.remove('hidden');
+                });
+        }
+
+        function submitResponse() {
+            const response = document.getElementById('response').value;
+            fetch('/submit', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({response: response})
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.question) {
+                        document.getElementById('question').innerText = data.question;
+                        document.getElementById('response').value = '';  // Clear the textarea
+                    } else if(data.feedback) {
+                        document.getElementById('feedback').innerText = data.feedback;
+                        document.getElementById('questionBox').classList.add('hidden');
+                        document.getElementById('feedbackBox').classList.remove('hidden');
+                        document.getElementById('finalQuestions').classList.remove('hidden');
+                        // document.getElementById('finalQuestion').innerText = data.conversation_log;
+                        
+
+                    }
+                });
+        }
+    </script>
+
+    <style>
+        .hidden {
+            display: none;
+        }
+    </style>
+</body>
+</html>
