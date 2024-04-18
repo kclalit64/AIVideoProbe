@@ -41,7 +41,7 @@ const VideoWindow = () => {
       </div>
       <div className="user-video">
         {/* Placeholder for user's self-reflection video */}
-        <video id="self-video" controls autoPlay muted>
+        <video id="self-video" autoPlay muted>
           {/* This video element will be populated with the live video stream */}
           Your browser does not support the video tag.
         </video>
