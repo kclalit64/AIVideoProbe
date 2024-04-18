@@ -43,6 +43,16 @@ const InputForm = () => {
           <input type="file" onChange={(e) => setResume(e.target.files[0])} />
         </label>
 
+        <label for="interviewer-select">
+    Select Interviewer:
+    <select id="interviewer-select" name="interviewer">
+        <option value="Komal">Komal</option>
+        <option value="Mayank">Mayank</option>
+        <option value="Lalit">Lalit</option>
+        <option value="Abhay">Abhay</option>
+    </select>
+</label>
+
         <button type="submit">Start Interview</button>
       </form>
     </div>

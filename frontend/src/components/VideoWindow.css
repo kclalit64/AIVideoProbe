@@ -1,32 +1,39 @@
-/* src/components/VideoWindow.css */
-
 .video-window-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 800px;
-    margin: auto;
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-  
-  .ai-image {
-    width: 30%;
-  }
-  
-  .ai-image img {
-    width: 100%;
-    border-radius: 50%;
-  }
-  
-  .user-video {
-    width: 65%;
-  }
-  
-  .user-video video {
-    width: 100%;
-    border-radius: 8px;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 60%;
+  height: 800px;
+  margin: auto;
+  padding: 20px;
+  padding-right: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  position: relative; /* Ensure relative positioning for absolute positioning of self video */
+}
+
+.ai-image {
+  width: 30%;
+}
+
+.ai-image img {
+  width: 100%;
+  border-radius: 50%;
+}
+
+.user-video {
+  position: absolute;
+  bottom: 15px;
+  right: 15px;
+  width: 30%;
+}
+
+.self-video::-webkit-media-controls {
+  display: none !important;
+}
+
+.user-video video {
+  width: 100%;
+  border-radius: 8px;
+}
