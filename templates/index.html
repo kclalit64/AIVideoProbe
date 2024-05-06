@@ -1,0 +1,290 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interview Interface</title>
+</head>
+<body>
+    <h1>Interview Application</h1>
+    <button onclick="startInterview()">Start Interview</button>
+
+    <script>
+        function startInterview() {
+            fetch('http://localhost:5000/start', { method: 'GET' });
+            // The output and input are all handled via the backend now.
+        }
+    </script>
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InterviewForge - Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>InterviewForge</h1>
+        </header>
+        <main>
+            <div class="input-form-container">
+                <h2>Let's Get You Ready!</h2>
+                <form id="input-form" method="post" action="/start">
+                    <label>
+                        Your Name:
+                        <input type="text" id="name" name="name"/>
+                    </label>
+        
+                    <label>
+                        Aspiring Job Title:
+                        <input type="text" id="job-title" name="job_title"/>
+                    </label>
+        
+                    <label>
+                        Job Description:
+                        <textarea id="job-description" name="job_description"></textarea>
+                    </label>
+        
+                    <label>
+                        Upload Resume (PDF/WORD):
+                        <input type="file" id="resume" />
+                    </label>
+        
+                    <label for="interviewer-select">
+                        Select Interviewer:
+                        <select id="interviewer-select" name="interviewer">
+                            <option value="Komal">Komal</option>
+                            <option value="Mayank">Mayank</option>
+                            <option value="Lalit">Lalit</option>
+                            <option value="Abhay">Abhay</option>
+                        </select>
+                    </label>
+        
+                    <button type="submit">Start Interview</button>
+                </form>
+            </div>
+
+            <div class="video-window-container">
+                <div class="ai-image">
+                    <img src="path/to/ai-image.jpg" alt="AI" />
+                </div>
+                <div class="user-video">
+                    <video id="self-video" autoplay muted>
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+
+            <div id="results"></div>
+        </main>
+        <footer>
+            <p>&copy; 2024 InterviewForge. All rights reserved by <a href="https://saastalent.co/">SaaSTalent</a>.</p>
+        </footer>
+    </div>
+    <style>
+        /* src/App.css */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+main {
+  display: flex;
+  width: 100%;
+}
+
+.input-form-container {
+  width: 30%;
+}
+
+.video-window-container {
+  width: 70%;
+}
+
+.input-form-container {
+    max-width: 400px;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    height: 100%;
+  }
+  
+  h2 {
+    color: #333;
+    text-align: center;
+  }
+  
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  label {
+    margin: 10px 0;
+    font-size: 14px;
+    color: #555;
+  }
+  
+  input,
+  textarea,
+  button {
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  
+  input {
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 300px; /* Set a fixed height */
+    resize: none; /* Disable resizing */
+    overflow-y: auto; /* Add scrollbar when content exceeds height */
+    box-sizing: border-box;
+  }
+  
+  button {
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #0056b3;
+  }
+  
+  /* Dropdown styling */
+  #interviewer-select {
+    width: 100%;
+    padding: 8px;
+    margin: 5px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23555555" width="18px" height="18px"><path d="M7 10l5 5 5-5H7z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    background-size: 18px 18px;
+  }
+  
+  /* Button styling */
+  button[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 4px;
+    background-color: #007bff;
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  button[type="submit"]:hover {
+    background-color: #0056b3;
+  }
+
+  .video-window-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 60%;
+    height: 800px;
+    margin: auto;
+    padding: 20px;
+    padding-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    position: relative; /* Ensure relative positioning for absolute positioning of self video */
+  }
+  
+  .ai-image {
+    width: 30%;
+  }
+  
+  .ai-image img {
+    width: 100%;
+    border-radius: 50%;
+  }
+  
+  .user-video {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    width: 30%;
+  }
+  
+  .self-video::-webkit-media-controls {
+    display: none !important;
+  }
+  
+  .user-video video {
+    width: 100%;
+    border-radius: 8px;
+  }
+
+/* src/components/Results.css */
+
+.results-container {
+  margin-top: 20px;
+}
+
+.result-section {
+  display: flex;
+  justify-content: space-between;
+}
+
+.result-pane {
+  width: 60%;
+}
+
+.technical-pane {
+  width: 35%;
+}
+
+.feedback {
+  margin-top: 10px;
+}
+
+    </style>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get video element
+            const videoElement = document.getElementById('self-video');
+
+            // Function to start capturing the live video stream from the front camera
+            async function startVideoStream() {
+                try {
+                    // Access the user's camera
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+
+                    // Attach the stream to the video element
+                    videoElement.srcObject = stream;
+                } catch (error) {
+                    console.error('Error accessing the camera:', error);
+                }
+            }
+
+            // Call the function to start capturing the video stream
+            startVideoStream();
+        });
+    </script>
+</body>
+</html>
