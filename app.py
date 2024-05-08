@@ -13,7 +13,18 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-
+import pandas as pd
+import re
+import requests
+import time
+import os
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer, PageBreak
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib import colors
+from reportlab.pdfgen import canvas
+import unicodedata
+import re
 requests.packages.urllib3.disable_warnings()
 
 engine = pyttsx3.init()
@@ -73,14 +84,8 @@ def start_interview():
             print(last_question)
             speak(last_question)
             feedback = generate_feedback(conversation_log)
-            error_count = count_grammar_errors(conversation_user)
-            conversation_duration = timestamps[-1] - timestamps[0] if timestamps else 1
-            fluency_percentage = calculate_fluency(conversation_duration, error_count)
-            print(f"Fluency Percentage: {fluency_percentage:.2f}%")
-            file_name = "Interview_Report1.pdf"
-            conversation = "" 
-            generate_pdf()
-            print("Interview section PDF generated successfully.")
+            parsed_feedback = parse_feedback(feedback)
+            generate_pdf(parsed_feedback)
             continue_interview = False
         else:
             n = n+1
@@ -151,194 +156,166 @@ def speak(text):
 
 def generate_feedback(conversation):
     prompt = f"""
-    You are required to evaluate and provide structured feedback based on an interview. The conversation log of the interview is captured as {conversation}.
-    Evaluation Criteria: Assess the candidate across the following key aspects:
+    To provide structured and comprehensive feedback for a candidate's interview based on the following conversation log: {conversation},
 
-    Technical Skills: Evaluate the proficiency in the required technical skills for the position.
+    Evaluate the candidate across these five key aspects :
 
-    Behavioral Skills: Assess communication, teamwork, adaptability, and other interpersonal skills.
+    **1. Technical Skills**:
+    **Score**: [Enter score out of 100]
+    - **Sr. No**: 1 - **Topic Name**: Example Skill - **Remarks**: Strengths; Needs improvement - **Resources**: Example resource, Another resource
+    ...
+    **Summary**: Provide a summary of the candidate's performance in technical skills, highlighting both strengths and weaknesses.
 
-    Problem-Solving and Critical Thinking: Analyze the candidate's ability to handle challenges through decision-making and analytical thinking.
+    **2. Behavioural Skills**:
+    **Score**: [Enter score out of 100]
+    - **Sr. No**: 1 - **Topic Name**: Example Skill - **Remarks**: Strengths; Needs improvement - **Resources**: Example resource, Another resource
+    ...
+    **Summary**: Provide a summary of the candidate's behavioural skills, focusing on areas of both proficiency and required development.
 
-    Cultural Fit: Determine the alignment with the company's values and team compatibility.
+    **3. Problem-Solving and Critical Thinking**:
+    **Score**: [Enter score out of 100] 
+    - **Sr. No**: 1 - **Topic Name**: Example Skill - **Remarks**: Strengths; Needs improvement  - **Resources**: Example resource, Another resource
+    ...
+    **Summary**: Discuss the candidate’s problem-solving skills and provide insights into their decision-making capabilities.
 
-    Work Experience and Achievements: Review past job experiences, achievements, and contributions to gauge potential impact.
+    **4. Cultural Fit**:
+    **Score**: [Enter score out of 100]
+    - **Sr. No**: 1 - **Topic Name**: Example Skill - **Remarks**: Strengths; Needs improvement - **Resources**: Example resource, Another resource
+    ...
+    **Summary**: Summarize how well the candidate fits into the company culture and team environment.
 
-    Feedback Format: Provide the feedback segmented by the aspects above. Each section should contain:
+    **5. Work Experience and Achievements**:
+    **Score**: [Enter score out of 100]
+    - **Sr. No**: 1 - **Topic Name**: Example Skill - **Remarks**: Strengths; Needs improvement - **Resources**: Example resource, Another resource
+    ...
+    **Summary**: Analyze the candidate’s previous experiences and achievements, emphasizing the impact and breadth of their work.
 
-    Section Name: [Name of the section being assessed]
-    Score: [Numeric score out of 100, reflecting the candidate’s performance in that section]
-    Evaluation Metrics Table:
-    Sr. No
-    Topic Name: [Specific topics within each section you have evaluated]
-    Remarks: [Provide up to 4 bullet points including both strengths and areas for improvement]
-    Resources: [Recommendations for resources, such as websites or books, to help the candidate improve]
-    Summary:
-    Overall analysis of the candidate’s performance in this section.
-    Highlight both strengths and areas requiring improvement.
-    Justify the score given.
+    strictly provide feedback in above mentioned format This structured feedback will be visualized in a PDF format, where each section corresponds to a separate table on a dedicated page.
+    for your reference Evaluation Metrics Table   would be a table consisting of the following columns: Sr. No ,Topic Name, Remarks and Resources 
+    Topic Name refers to the topic you evaluated in the section Remarks is Your remarks in bullet points for the topic; try to include both positive and negative remarks here . Keep this as descriptive as possible but short. You are free to use phrases to mind the word limit.  
+    Resources is a list of websites, books or any helpful resource that can be used by the candidate to improve on his weak aspects and points for the topic evaluated. provide actual references to existing resources for that skill provide each resource in th form of hyperlink 
+    Summary should be a summary of a candidate's performance for the section mentioning the shortcomings, positive aspects, wrong responses and overall justification for the grading.
     """
     system = [{"role": "system", "content": prompt}]
     feedback = generate_question(system)
     return feedback
 
-def generate_pdf():
-    doc = SimpleDocTemplate("interview_sections.pdf", pagesize=letter, leftMargin=50, rightMargin=50, topMargin=50, bottomMargin=50, \
-                            title="Interview Sections", showBoundary=1)
-    styles = getSampleStyleSheet()
-
-    # Define content for the PDF
+def generate_pdf(feedback):
+    filename = "Candidate_Feedback.pdf"
+    doc = SimpleDocTemplate(filename, pagesize=letter)
     content = []
+    styles = getSampleStyleSheet()
+    for section in feedback:
+        # Section Title
+        section_title = Paragraph(f"<b>{section['Section Name']}</b>", styles['Title'])
+        content.append(section_title)
 
-    # Insert Section 1 title
-    section1_title = Paragraph("<b><i>Section 1</i></b>", styles["Title"])
-    section1_title.alignment = 1  # Center alignment
-    content.append(section1_title)
+        # Section Score
+        score = Paragraph(f"Score: {section['Score']}/100", styles['BodyText'])
+        content.append(score)
+        
+        # Table for Evaluation Metrics
+        table_data = [['Sr. No', 'Topic Name', 'Remarks', 'Resources']]
+        
+        for item in section['Evaluation Metrics Table']:
+            remarks = Paragraph('<br/>'.join(item['Remarks']), styles['BodyText'])
+            
+            # Update links to be clickable
+            resources_links = []
+            for resource in item['Resources']:
+                # Check if the line contains a hyperlink format
+                if '[' in resource and ']' in resource and '(' in resource and ')' in resource:
+                    # Extract the display text and URL
+                    start_link = resource.index('[') + 1
+                    end_link = resource.index(']')
+                    start_url = resource.index('(') + 1
+                    end_url = resource.index(')')
+                    
+                    link_text = resource[start_link:end_link]
+                    url = resource[start_url:end_url]
+                    
+                    # Form an HTML-like link with an anchor tag
+                    link_html = f'<link href="{url}">{link_text}</link>'
+                    resources_links.append(link_html)
+                else:
+                    resources_links.append(resource)
+            
+            resources_paragraph = Paragraph('<br/>'.join(resources_links), styles['BodyText'])
+            table_data.append([item['Sr. No'], item['Topic Name'], remarks, resources_paragraph])
+        
+        table = Table(table_data, splitByRow=True)
+        table.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.gray),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+            ('BACKGROUND', (1, 1), (-1, -1), colors.lightgrey),
+            ('VALIGN', (0, 0), (-1, -1), 'TOP')
+        ]))
 
-    # Add a spacer for gap
-    content.append(Spacer(1, 20))
+        table.hAlign = 'LEFT'
+        content.append(table)
 
-    # Page 1: Technical Section
-    content.extend(generate_section("Technical Section", 85, [
-        ("1", "Python Programming", "Good understanding", "Official Python Documentation"),
-        ("2", "Data Structures", "Needs improvement", "GeeksforGeeks"),
-        ("3", "Algorithms", "Excellent", "Introduction to Algorithms."),
-        ("4", "Database Management", "Moderate knowledge", "SQL Documentation"),
-        ("5", "Web Development", "Basic understanding", "MDN Web Docs")
-    ]))
+        # Summary Paragraph
+        summary = Paragraph(section['Summary'], styles['BodyText'])
+        content.append(summary)
+        content.append(Spacer(1, 12))  # Adding space after each section
+        content.append(PageBreak())  # Page break after each section
 
-    # Page break
-    content.append(PageBreak())
-
-    section1_title = Paragraph("<b><i>Section 2</i></b>", styles["Title"])
-    section1_title.alignment = 1  # Center alignment
-    content.append(section1_title)
-
-    content.append(Spacer(1, 20))
-    # Page 2: Behavioural Skills Section
-    content.extend(generate_section("Behavioural Skills", 75, [
-        ("1", "Communication", "Proven effective communication", "Example resource"),
-        ("2", "Teamwork", "Collaborative team player", "Example resource"),
-        ("3", "Problem Solving", "Strong problem-solving abilities", "Example resource"),
-        ("4", "Leadership", "Inspiring natural leadership", "Example resource"),
-        ("5", "Adaptability", "Quickly adapts to situations", "Example resource")
-    ]))
-
-    # Page break
-    content.append(PageBreak())
-
-    section1_title = Paragraph("<b><i>Section 3</i></b>", styles["Title"])
-    section1_title.alignment = 1  # Center alignment
-    content.append(section1_title)
-    content.append(Spacer(1, 20))
-
-    # Page 3: Problem-Solving and Critical Thinking
-    content.extend(generate_section("Problem-Solving and Critical Thinking", 90, [
-        ("1", "Analytical Thinking", "Analytical problem-solving", "Example resource"),
-        ("2", "Creativity", "Ability to think outside the box", "Example resource"),
-        ("3", "Decision Making", "Decisive under pressure", "Example resource"),
-        ("4", "Critical Thinking", "Strong critical thinking skills", "Example resource"),
-        ("5", "Logical Reasoning", "Systematic problem-solving", "Example resource")
-    ]))
-
-    # Page break
-    content.append(PageBreak())
-    section1_title = Paragraph("<b><i>Section 4</i></b>", styles["Title"])
-    section1_title.alignment = 1  # Center alignment
-    content.append(section1_title)
-    content.append(Spacer(1, 20))
-    # Page 4: Cultural Fit
-    content.extend(generate_section("Cultural Fit", 80, [
-        ("1", "Team Collaboration", "Works well in diverse teams", "Example resource"),
-        ("2", "Company Values Alignment", "Cultural alignment", "Example resource"),
-        ("3", "Adaptability", "Adaptable to company culture", "Example resource"),
-        ("4", "Respect for Diversity", "Fosters diversity", "Example resource"),
-        ("5", "Open Communication", "Fosters open communication", "Example resource")
-    ]))
-
-    # Page break
-    content.append(PageBreak())
-    section1_title = Paragraph("<b><i>Section 5</i></b>", styles["Title"])
-    section1_title.alignment = 1  # Center alignment
-    content.append(section1_title)
-    content.append(Spacer(1, 20))
-
-    # Page 5: Work Experience and Achievements
-    content.extend(generate_section("Work Experience and Achievements", 95, [
-        ("1", "Project Management", "Complex project management", "Example resource"),
-        ("2", "Technical Skills", "Proven technical expertise", "Example resource"),
-        ("3", "Leadership Experience", "Team milestone leadership", "Example resource"),
-        ("4", "Industry Recognition", "Award-winning contributions", "Example resource"),
-        ("5", "Contributions to Community", "Community initiative involvement", "Example resource")
-    ]))
-
-    # Build PDF
     doc.build(content)
+# Example feedback structured list
 
-# Function to generate section content
-def generate_section(title, score, topics):
-    styles = getSampleStyleSheet()
+def parse_feedback(feedback_string):
+    # Define the structured data format
+    feedback_data = []
 
-    content = []
+    # Split feedback into sections based on known headings
+    # Use more robust split regex that looks for number followed by period and any text up to colon or newline
+    sections = re.split(r'\n(?=\*\*(\d+\.\s[^*]+?)\*\*:)', feedback_string)
+    sections = [s.strip() for s in sections if s.strip()]
 
-    # Heading with blue color box
-    heading_style = styles["Heading1"]
-    heading_style.textColor = colors.white
-    heading_style.backColor = colors.blue
-    heading_style.alignment = 1  # Center alignment
-    content.append(Paragraph(title, heading_style))
+    # Process each section
+    for section in sections:
+        # Initialize default values
+        
+        section_name = "Undefined Section"  # Default if no match is found
+        
 
-    # Score section
-    score_paragraph = Paragraph(f"Score: {score}/100", styles["Heading2"])
-    content.append(score_paragraph)
+        # Extracting the section name
+        section_name_match = re.match(r'\*\*(\d+\.\s*[^*]+?)\*\*:', section)
+        if section_name_match:
+            section_name = section_name_match.group(1)
 
-    # Add 25px top padding between Score section and table
-    content.append(Spacer(1, 25))
+        # Extracting the score
+        score_match = re.search(r'\*\*Score\*\*:\s*(\d+)', section)
+        if score_match:
+            score = score_match.group(1)
 
-    # Side heading for Evaluation Metrics
-    evaluation_heading_style = styles["Heading2"]
-    evaluation_heading_style.alignment = 0  # Left alignment
-    content.append(Paragraph("Evaluation Metrics", evaluation_heading_style))
+        # Extract points for the Evaluation Metrics Table
+        table_content = []
+        points = re.findall(r'- \*\*Sr\. No\*\*:\s*(\d+)\s*- \*\*Topic Name\*\*:\s*([^*]+)\s*- \*\*Remarks\*\*:\s*([^*]+)\s*- \*\*Resources\*\*:\s*([^\n]+)', section)
+        for point in points:
+            sr_no, topic_name, remarks, resources = point
+            remarks_list = remarks.split('; ')
+            resources_list = [resource.strip() for resource in resources.split(',')]
+            table_content.append({'Sr. No': sr_no, 'Topic Name': topic_name, 'Remarks': remarks_list, 'Resources': resources_list})
 
-    # Table data
-    table_data = [["Sr. No", "Topic", "Remarks", "Resources"]]
-    for sr_no, topic, remarks, resources in topics:
-        table_data.append([sr_no, topic, remarks, resources])
+        # Extract the summary
+        summary = ""  # Default summary if no match is found
+        summary_match = re.search(r'\*\*Summary\*\*:\s*([^*]+)', section)
+        if summary_match:
+            summary = summary_match.group(1)
 
-    # Define table style
-    table_style = TableStyle([('BACKGROUND', (0, 0), (-1, 0), colors.blue),
-                              ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
-                              ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-                              ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-                              ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-                              ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-                              ('GRID', (0, 0), (-1, -1), 1, colors.black),
-                              ('BOX', (0, 0), (-1, -1), 1, colors.black),  # Border around the entire table
-                              ('BOX', (0, 0), (-1, -1), 1, colors.black),  # Border around each cell
-                              ('INNERGRID', (0, 0), (-1, -1), 1, colors.black)])  # Inner grid lines
-
-    # Create table
-    section_table = Table(table_data)
-    section_table.setStyle(table_style)
-
-    # Set width for all columns
-    col_widths = [60, 150, 150, 150]
-    section_table._argW = col_widths
-
-    # Set row heights
-    section_table.setStyle(TableStyle([('SIZE', (0, 0), (-1, -1), 10)]))
-
-    # Enable word wrapping for all columns
-    section_table.setStyle(TableStyle([('WORDWRAP', (0, 0), (-1, -1), True)]))
-
-    # Add table to content
-    content.append(section_table)
-
-    # Side heading for Summary
-    summary_heading_style = styles["Heading2"]
-    summary_heading_style.alignment = 0  # Left alignment
-    content.append(Paragraph("Summary", summary_heading_style))
-
-    return content
+        # Append structured data for current section
+        if section_name != 'Undefined Section':
+            feedback_data.append({
+                'Section Name': section_name,
+                'Score': score,
+                'Evaluation Metrics Table': table_content,
+                'Summary': summary
+            })
+    
+    return feedback_data
 if __name__ == '_main_':
     app.run(debug=True)
