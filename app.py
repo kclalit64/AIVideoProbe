@@ -13,7 +13,7 @@ from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Table, TableStyle, Spacer, PageBreak
 from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib import colors
-import pandas as pd
+import pandas as pd  #?
 import re
 import requests
 import time
@@ -25,6 +25,8 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 import unicodedata
 import re
+import PyPDF2
+from docx import Document
 requests.packages.urllib3.disable_warnings()
 
 engine = pyttsx3.init()
@@ -60,11 +62,27 @@ def home():
 import datetime
 @app.route("/start", methods=['POST'])
 def start_interview():
+    def upload_file(file):
+        if file:
+            if file.filename.endswith('.pdf'):
+                reader = PyPDF2.PdfFileReader(file)
+                text = ''
+                for page in range(reader.getNumPages()):
+                    text += reader.getPage(page).extractText()
+                return text
+            elif file.filename.endswith('.docx'):
+                doc = Document(file)
+                text = ' '.join([paragraph.text for paragraph in doc.paragraphs])
+                return text
+
+        return 'No file uploaded'
+
     name = request.form.get('name')
     job_title = request.form.get('job_title')
     job_description = request.form.get('job_description')
     company_name = request.form.get('company_name')
     interviewer = request.form.get('interviewer')
+    resume = upload_file(request.files.get('resume'))
 
     global questions, n, conversation_log, system_prompt, timestamps, next_question
     initial_prompt = f"Generate an initial interview question."
