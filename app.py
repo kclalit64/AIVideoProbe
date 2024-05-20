@@ -37,7 +37,7 @@ engine.setProperty('voice', voices[1].id)  # 0 for male voice, 1 for female voic
 engine.setProperty('rate', 150) 
 app = Flask(__name__)
 
-resume = "Komal Bhole B-Tech IT, VIIT Pune I'm excited to start my career and bring my skills onto the table. I'm a quick learner and eager to take on new challenges. I'm looking forward to connecting with other professionals in the industry and exploring new opportunities. komal.22010509@viit.ac.in 7499203665 Pune, India 02 June, 2003 linkedin.com/in/komal-bhole-4904a2204 github.com/KOMAL616 EDUCATION B-Tech - Information Technology Vishwakarma Institute of Information Technology 01/2021 - Present, 9.19 HSC Board Brijilal Biyani Science College, Amravati SKILLSC C++ Python(Numpy, Pandas, Matplotlib) Java HTML Git/GitHub CSS DBMS(MySql) Operating System Figma Data Structure and Algorithms Oops Php Computer Networking PERSONAL PROJECTS Vegetable Ordering Website (06/2022 - 12/2022) Enable customers to order vegetables online Convenient and hassle-free way to purchase vegies. Technologies used: Html, Css, Javascript, Php, MySql. Health App (Healthify (01/2023 - 04/2023) Booking appointments from any hybrid location.. Unique QR code consisting of all the minute details of patient AI based chatbot for clearing basic doubts. Technologies Used : Java , Xml, Kotlin, Firebase. Built a React CI/CD Pipeline using CircleCI 1. Collaborate with the team to develop and implement machine learning algorithms and models 2. Assist in collecting, cleaning, and analyzing large datasets to derive actionable insights 3. Develop and maintain data preprocessing pipelines for efficient data handling 4. Contribute to the design and development of NLP models for text classification and sentiment analysis 5. Research cutting-edge ML techniques and stay updated with the latest advancements in the field 6. Assist in building and improving ML models for personalized recommendations and content filtering 7. Help with the deployment and monitoring of ML models in production environments Join us and make a significant impact in revolutionizing the way people access knowledge and grow personally through our innovative platform. Apply now and take the first step towards an exciting career in Machine Learning with MentorBoxx! Skill(s) requiredData Analytics Machine Learning Natural Language Processing (NLP)Python"
+# resume = "Komal Bhole B-Tech IT, VIIT Pune I'm excited to start my career and bring my skills onto the table. I'm a quick learner and eager to take on new challenges. I'm looking forward to connecting with other professionals in the industry and exploring new opportunities. komal.22010509@viit.ac.in 7499203665 Pune, India 02 June, 2003 linkedin.com/in/komal-bhole-4904a2204 github.com/KOMAL616 EDUCATION B-Tech - Information Technology Vishwakarma Institute of Information Technology 01/2021 - Present, 9.19 HSC Board Brijilal Biyani Science College, Amravati SKILLSC C++ Python(Numpy, Pandas, Matplotlib) Java HTML Git/GitHub CSS DBMS(MySql) Operating System Figma Data Structure and Algorithms Oops Php Computer Networking PERSONAL PROJECTS Vegetable Ordering Website (06/2022 - 12/2022) Enable customers to order vegetables online Convenient and hassle-free way to purchase vegies. Technologies used: Html, Css, Javascript, Php, MySql. Health App (Healthify (01/2023 - 04/2023) Booking appointments from any hybrid location.. Unique QR code consisting of all the minute details of patient AI based chatbot for clearing basic doubts. Technologies Used : Java , Xml, Kotlin, Firebase. Built a React CI/CD Pipeline using CircleCI 1. Collaborate with the team to develop and implement machine learning algorithms and models 2. Assist in collecting, cleaning, and analyzing large datasets to derive actionable insights 3. Develop and maintain data preprocessing pipelines for efficient data handling 4. Contribute to the design and development of NLP models for text classification and sentiment analysis 5. Research cutting-edge ML techniques and stay updated with the latest advancements in the field 6. Assist in building and improving ML models for personalized recommendations and content filtering 7. Help with the deployment and monitoring of ML models in production environments Join us and make a significant impact in revolutionizing the way people access knowledge and grow personally through our innovative platform. Apply now and take the first step towards an exciting career in Machine Learning with MentorBoxx! Skill(s) requiredData Analytics Machine Learning Natural Language Processing (NLP)Python"
 # Position = "Software Developer"
 # job_description = "Design, develop, and test software solutions Collaborate with cross-functional teams to define, design, and ship new features Strong programming skills in languages like Java, Python, or C++"
 # Company_Name = "Google"
@@ -85,14 +85,71 @@ def start_interview():
     resume = upload_file(request.files.get('resume'))
 
     global questions, n, conversation_log, system_prompt, timestamps, next_question
-    initial_prompt = f"Generate an initial interview question."
+    if interviewer.lower() == 'lalit':
+        instrutions =   """
+        Technical Skills (40%): Focus primarily on evaluating the candidate's technical proficiency. Ask detailed technical questions related to the job requirements, and provide scenarios to assess practical application.
+        Behavioural Skills (20%): Include some questions to gauge basic behavioural competencies, such as communication and teamwork, but with less emphasis compared to technical skills.
+        Problem-Solving and Critical Thinking (20%): Incorporate problem-solving scenarios related to technical challenges faced in the role. Assess the candidate's ability to analyze problems and propose effective solutions.
+        Cultural Fit (10%): Ask a few questions about the candidate's approach to teamwork and collaboration, but with less depth compared to technical and problem-solving aspects.
+        Work Experience and Achievements (10%): Briefly discuss the candidate's past experiences to understand their technical contributions and achievements.
+        """
+
+    elif interviewer.lower() == 'komal':
+        instructions = """ Technical Skills (15%): Ask a few basic technical questions to ensure the candidate meets minimum requirements, but with less emphasis compared to other aspects.ehavioural Skills (30%): Place significant emphasis on evaluating communication, teamwork, and adaptability through situational questions and role-playing scenarios.Problem-Solving and Critical Thinking (15%): Include some problem-solving scenarios to assess the candidate's ability to handle challenges, but with less complexity compared to other interviewers.Cultural Fit (30%): Focus heavily on discussing the candidate's alignment with company values, culture, and their ability to contribute positively to the team dynamic.Work Experience and Achievements (10%): Briefly discuss the candidate's past experiences to understand their overall fit within the company culture and team environment."""
+    elif interviewer.lower() == 'mayank':
+        instructions = """ candidate meets the basic requirements, but with less emphasis compared to other aspects.
+        Behavioural Skills (15%): Ask a few questions related to communication and teamwork, but with minimal depth compared to problem-solving and critical thinking.
+        Problem-Solving and Critical Thinking (40%): Place a heavy emphasis on presenting complex scenarios and assessing the candidate's ability to analyze problems, think critically, and propose innovative solutions.
+        Cultural Fit (15%): Discuss the candidate's alignment with company culture briefly, focusing on their approach to handling challenges within a team environment.
+        Work Experience and Achievements (10%): Briefly review the candidate's past experiences to understand how they have applied problem-solving skills in previous roles.
+        """
+
+    elif interviewer.lower() == 'abhay':
+        instructions = """ Technical Skills (30%): Assess the candidate's technical capabilities with a mix of theoretical and practical questions.
+        Behavioural Skills (25%): Place significant emphasis on evaluating communication, adaptability, and teamwork skills through scenario-based questions.
+        Problem-Solving and Critical Thinking (20%): Include a moderate level of problem-solving scenarios to assess analytical thinking and decision-making abilities.
+        Cultural Fit (15%): Probe the candidate's alignment with company values and culture through situational questions related to team dynamics and work environment.
+        Work Experience and Achievements (10%): Briefly discuss the candidate's past experiences to understand their overall impact and contributions.
+        """
+
+    initial_prompt = interview_script = f"""
+    Hi ChatGPT, you are to act as an interviewer in this exercise and conduct my interviw as per the instructions {instructions}.  My resume is as follows:
+
+    {resume}
     
-    question = generate_question([*system_prompt, {"role": "user", "content": initial_prompt}])
+    This exercise would consist of you conducting my interview consisting of questions in the range of 30 - 50. The number of questions should strictly not exceed this. Whenever, I would be conversing with you, the ChatGPT model and not as the interviewer, I would prompt you as: 
+
+    system: 
+
+    Other prompts during the interviews which would be answers to your questions, would be given as prompts to you without any such prefix.
+
+    After the interview, you are to assess me based on the following five aspects:
+
+
+    Technical Skills: Assessing the candidate's proficiency in the specific technical skills required for the job.
+    Behavioural Skills: Evaluating communication, teamwork, adaptability, and other interpersonal skills.
+    Problem-Solving and Critical Thinking: Assessing analytical thinking, decision-making, and the ability to handle challenges.
+    Cultural Fit: Examining alignment with the company's values, culture, and the ability to work within a team.
+    Work Experience and Achievements: Reviewing past experiences, achievements, and contributions to understand the candidate's capabilities and potential impact.
+
+
+    Hence, please note to ask questions such that all of these aspects can be evaluated and considered in the question set. Once you are done with the interview questions. Simply respond with the following response:
+    EXIT 0
+    """
+    conversation_log.append({'prompt': initial_prompt})
+
+
+
+    system_prompt = [  {"role": "system", "content": f"Hi ChatGPT, here’s an interview log conducted by you for the {job_description} pertaining to {job_title} as: {conversation_log}. Now, I need you to continue the interview as per the initial interview instructions. The number of questions asked until now is {n}. Hence, ask a follow up question. Strictly make sure not to repeat any question and conduct the entire interview as per instructions in the prompts given earlier to you in the conversation log. If you feel that you want to conclude the interview as per the number of questions or feel that all the assessment aspects have been covered up, please reply with just the response “EXIT 0” and nothing else." }]
+    
+
+    question = generate_question([ {"role": "system", "content": system_prompt}])
     print(question)
     conversation_log.append({"role": "assistant", "content": question})
+    print(conversation_log)
     speak(question)
 
-    system_prompt = [  {"role": "system", "content": f"Hi GPT, you are  acting as an interviewer in this exercise. You are to interview me for {job_description} at {company_name} with the job description posted as {job_description}. My resume is as follows:{resume}In This exercise you are  conducting my interview and current conversation log is as {conversation_log} if it is empty means it is first question,   Whenever, I would be conversing with you, the ChatGPT model and not as the interviewer,  After the interview, you are to assess me based on the following five aspects:Technical Skills: Assessing the candidate's proficiency in the specific technical skills required for the job. Behavioural Skills: Evaluating communication, teamwork, adaptability, and other interpersonal skills. Problem-Solving and Critical Thinking: Assessing analytical thinking, decision-making, and the ability to handle challenges. Cultural Fit: Examining alignment with the company's values, culture, and the ability to work within a team. Work Experience and Achievements: Reviewing past experiences, achievements, and contributions to understand the candidate's capabilities and potential impact. Hence, please note to ask questions such that all of these aspects can be evaluated and considered in the question set.  currently you have asked {n}  number of questions and the number of questions  should strictly not exceed 3, Once the questions exceed the limit. Simply respond with the following response: EXIT_0 at the start of the responce and greet the candidate and announce that interview is over and instruct him to wait for feedack" }]
+
 
     continue_interview = True
     while continue_interview:
@@ -114,8 +171,8 @@ def start_interview():
             end_time = time.time()  # Record the end time
             timestamps.append(end_time)
             conversation_log.append({"role": "user", "content": response})
-            follow_up_prompt = " generate a follow-up question."
-            next_question = generate_question([*system_prompt, {"role": "user", "content": follow_up_prompt}])
+            
+            next_question = generate_question([ {"role": "system", "content": system_prompt}])
             print(next_question)
             if n<4:
                 speak(next_question)
