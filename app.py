@@ -31,7 +31,7 @@ requests.packages.urllib3.disable_warnings()
 
 engine = pyttsx3.init()
 recognizer = sr.Recognizer()
-engine.setProperty('volume', 1.0)
+#engine.setProperty('volume', 1.0)
 voices = engine.getProperty('voices')
 engine.setProperty('voice', voices[1].id)  # 0 for male voice, 1 for female voice
 engine.setProperty('rate', 150) 
@@ -83,6 +83,7 @@ def start_interview():
     company_name = request.form.get('company_name')
     interviewer = request.form.get('interviewer')
     resume = upload_file(request.files.get('resume'))
+    print(resume)
 
     global questions, n, conversation_log, system_prompt, timestamps, next_question
     if interviewer.lower() == 'lalit':
@@ -140,13 +141,13 @@ def start_interview():
 
 
 
-    system_prompt = [  {"role": "system", "content": f"Hi ChatGPT, here’s an interview log conducted by you for the {job_description} pertaining to {job_title} as: {conversation_log}. Now, I need you to continue the interview as per the initial interview instructions. The number of questions asked until now is {n}. Hence, ask a follow up question. Strictly make sure not to repeat any question and conduct the entire interview as per instructions in the prompts given earlier to you in the conversation log. If you feel that you want to conclude the interview as per the number of questions or feel that all the assessment aspects have been covered up, please reply with just the response “EXIT 0” and nothing else." }]
+    system_prompt = [  {"role": "system", "content": f"Hi ChatGPT, here’s an interview log conducted by you for the {job_description} pertaining to {job_title} as: {conversation_log}. Now, I need you to continue the interview as per the initial interview instructions. You are strictly instructed to ask only one question at a time regardless the complexity and depth. The number of questions asked until now is {n}. Hence, ask a follow up question. Strictly make sure not to repeat any question and conduct the entire interview as per instructions in the prompts given earlier to you in the conversation log. If you feel that you want to conclude the interview as per the number of questions or feel that all the assessment aspects have been covered up, please reply with just the response “EXIT 0” and nothing else." }]
     
 
-    question = generate_question([ {"role": "system", "content": system_prompt}])
+    question = generate_question(system_prompt)
     print(question)
     conversation_log.append({"role": "assistant", "content": question})
-    print(conversation_log)
+    #print(conversation_log)
     speak(question)
 
 
@@ -172,7 +173,7 @@ def start_interview():
             timestamps.append(end_time)
             conversation_log.append({"role": "user", "content": response})
             
-            next_question = generate_question([ {"role": "system", "content": system_prompt}])
+            next_question = generate_question(system_prompt)
             print(next_question)
             if n<4:
                 speak(next_question)
@@ -355,7 +356,7 @@ def parse_feedback(feedback_string):
         # Initialize default values
         
         section_name = "Undefined Section"  # Default if no match is found
-        
+        score = 0
 
         # Extracting the section name
         section_name_match = re.match(r'\*\*(\d+\.\s*[^*]+?)\*\*:', section)
