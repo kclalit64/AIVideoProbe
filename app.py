@@ -62,19 +62,33 @@ def home():
 import datetime
 @app.route("/start", methods=['POST'])
 def start_interview():
+    # def upload_file(file):
+    #     if file:
+    #         if file.filename.endswith('.pdf'):
+    #             reader = PyPDF2.PdfFileReader(file)
+    #             text = ''
+    #             for page in range(reader.getNumPages()):
+    #                 text += reader.getPage(page).extractText()
+    #             return text
+    #         elif file.filename.endswith('.docx'):
+    #             doc = Document(file)
+    #             text = ' '.join([paragraph.text for paragraph in doc.paragraphs])
+    #             return text
+
+    #     return 'No file uploaded'
+
     def upload_file(file):
-        if file:
+        if file and file.filename:
             if file.filename.endswith('.pdf'):
-                reader = PyPDF2.PdfFileReader(file)
+                reader = PyPDF2.PdfReader(file)
                 text = ''
-                for page in range(reader.getNumPages()):
-                    text += reader.getPage(page).extractText()
+                for page in range(len(reader.pages)):
+                    text += reader.pages[page].extract_text()
                 return text
             elif file.filename.endswith('.docx'):
                 doc = Document(file)
                 text = ' '.join([paragraph.text for paragraph in doc.paragraphs])
                 return text
-
         return 'No file uploaded'
 
     name = request.form.get('name')
