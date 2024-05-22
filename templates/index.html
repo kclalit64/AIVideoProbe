@@ -312,10 +312,36 @@ main {
             startVideoStream();
         });
 
-        document.getElementById('input-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent the form from submitting the traditional way
+    //     document.getElementById('input-form').addEventListener('submit', function(event) {
+    //         //event.preventDefault(); // Prevent the form from submitting the traditional way
 
-            const interviewer = document.getElementById('interviewer-select').value;
+    //         const interviewer = document.getElementById('interviewer-select').value;
+    //         const interviewerImage = document.getElementById('interviewer-image');
+            
+    //         // Update the image source based on the selected interviewer
+    //         switch(interviewer) {
+    //             case 'Komal':
+    //                 interviewerImage.src = "{{url_for('static', filename='/images/komal.png')}}";
+    //                 break;
+    //             case 'Mayank':
+    //                 interviewerImage.src = "{{url_for('static', filename='/images/mayank.png')}}";
+    //                 break;
+    //             case 'Lalit':
+    //                 interviewerImage.src = "{{url_for('static', filename='/images/lalit.png')}}";
+    //                 break;
+    //             case 'Abhay':
+    //                 interviewerImage.src = "{{url_for('static', filename='/images/abhay.png')}}";
+    //                 break;
+    //             default:
+    //                 interviewerImage.src = "{{url_for('static', filename='/images/komal.png')}}";
+    //         }
+
+    //         // Optionally, you can submit the form using AJAX or any other method here
+
+    //     });
+    // 
+    document.getElementById('interviewer-select').addEventListener('change', function() {
+            const interviewer = this.value;
             const interviewerImage = document.getElementById('interviewer-image');
             
             // Update the image source based on the selected interviewer
@@ -324,22 +350,19 @@ main {
                     interviewerImage.src = "{{url_for('static', filename='/images/komal.png')}}";
                     break;
                 case 'Mayank':
-                    interviewerImage.src = "{{url_for('static', filename='/images/mayank.png')}}";
+                    interviewerImage.src = 'path/to/mayank-image.jpg';
                     break;
                 case 'Lalit':
                     interviewerImage.src = "{{url_for('static', filename='/images/lalit.png')}}";
                     break;
                 case 'Abhay':
-                    interviewerImage.src = "{{url_for('static', filename='/images/abhay.png')}}";
+                    interviewerImage.src = 'path/to/abhay-image.jpg';
                     break;
                 default:
                     interviewerImage.src = "{{url_for('static', filename='/images/komal.png')}}";
             }
-
-            // Optionally, you can submit the form using AJAX or any other method here
-
         });
     </script>
-    </script>
+    
 </body>
 </html>
