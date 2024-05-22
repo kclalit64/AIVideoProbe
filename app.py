@@ -268,7 +268,7 @@ def generate_feedback(conversation):
     strictly provide feedback in above mentioned format This structured feedback will be visualized in a PDF format, where each section corresponds to a separate table on a dedicated page.
     for your reference Evaluation Metrics Table   would be a table consisting of the following columns: Sr. No ,Topic Name, Remarks and Resources 
     Topic Name refers to the topic you evaluated in the section Remarks is Your remarks in bullet points for the topic; try to include both positive and negative remarks here . Keep this as descriptive as possible but short. You are free to use phrases to mind the word limit.  
-    Resources is a list of websites, books or any helpful resource that can be used by the candidate to improve on his weak aspects and points for the topic evaluated. provide actual references to existing resources for that skill provide each resource in th form of hyperlink 
+    Resources is a list of websites, books or any helpful resource that can be used by the candidate to improve on his weak aspects and points for the topic evaluated. provide actual references to existing resources for that skill provide each resource in th form of hyperlink. Now I would highly emphasize that the number of rows be kept at exactly 5, no less no more with character limit for each field not exceeding 10 words per cell.
     Summary should be a summary of a candidate's performance for the section mentioning the shortcomings, positive aspects, wrong responses and overall justification for the grading.
     """
     system = [{"role": "system", "content": prompt}]
