@@ -116,7 +116,7 @@ def start_interview():
 
     {resume}
     
-    This exercise would consist of you conducting my interview consisting of questions in the range of 30 - 50. The number of questions should strictly not exceed this. Whenever, I would be conversing with you, the ChatGPT model and not as the interviewer, I would prompt you as: 
+    This exercise would consist of you conducting my interview of 7 questions. The number of questions should strictly not exceed this. Whenever, I would be conversing with you, the ChatGPT model and not as the interviewer, I would prompt you as: 
 
     system: 
 
@@ -134,6 +134,7 @@ def start_interview():
 
     Hence, please note to ask questions such that all of these aspects can be evaluated and considered in the question set. Once you are done with the interview questions. Simply respond with the following response:
     EXIT 0
+
     """
     conversation_log.append({'prompt': initial_prompt})
 
@@ -153,7 +154,7 @@ def start_interview():
     continue_interview = True
     while continue_interview:
 
-        if n>3:
+        if n>10:
             last_question = "Hello there! I must say, your interview went  well. Now, please patiently wait for the feedback. It won't take long, and I'm sure you'll find it insightful. Great job again, and thank you for your time during the interview!"
             print(last_question)
             speak(last_question)
@@ -173,7 +174,7 @@ def start_interview():
             
             next_question = generate_question(system_prompt)
             print(next_question)
-            if n<4:
+            if n<11:
                 speak(next_question)
 
             conversation_log.append({"role": "assistant", "content": next_question})
