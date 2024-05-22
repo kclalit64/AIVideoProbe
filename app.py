@@ -37,12 +37,6 @@ engine.setProperty('voice', voices[1].id)  # 0 for male voice, 1 for female voic
 engine.setProperty('rate', 150) 
 app = Flask(__name__)
 
-# resume = "Komal Bhole B-Tech IT, VIIT Pune I'm excited to start my career and bring my skills onto the table. I'm a quick learner and eager to take on new challenges. I'm looking forward to connecting with other professionals in the industry and exploring new opportunities. komal.22010509@viit.ac.in 7499203665 Pune, India 02 June, 2003 linkedin.com/in/komal-bhole-4904a2204 github.com/KOMAL616 EDUCATION B-Tech - Information Technology Vishwakarma Institute of Information Technology 01/2021 - Present, 9.19 HSC Board Brijilal Biyani Science College, Amravati SKILLSC C++ Python(Numpy, Pandas, Matplotlib) Java HTML Git/GitHub CSS DBMS(MySql) Operating System Figma Data Structure and Algorithms Oops Php Computer Networking PERSONAL PROJECTS Vegetable Ordering Website (06/2022 - 12/2022) Enable customers to order vegetables online Convenient and hassle-free way to purchase vegies. Technologies used: Html, Css, Javascript, Php, MySql. Health App (Healthify (01/2023 - 04/2023) Booking appointments from any hybrid location.. Unique QR code consisting of all the minute details of patient AI based chatbot for clearing basic doubts. Technologies Used : Java , Xml, Kotlin, Firebase. Built a React CI/CD Pipeline using CircleCI 1. Collaborate with the team to develop and implement machine learning algorithms and models 2. Assist in collecting, cleaning, and analyzing large datasets to derive actionable insights 3. Develop and maintain data preprocessing pipelines for efficient data handling 4. Contribute to the design and development of NLP models for text classification and sentiment analysis 5. Research cutting-edge ML techniques and stay updated with the latest advancements in the field 6. Assist in building and improving ML models for personalized recommendations and content filtering 7. Help with the deployment and monitoring of ML models in production environments Join us and make a significant impact in revolutionizing the way people access knowledge and grow personally through our innovative platform. Apply now and take the first step towards an exciting career in Machine Learning with MentorBoxx! Skill(s) requiredData Analytics Machine Learning Natural Language Processing (NLP)Python"
-# Position = "Software Developer"
-# job_description = "Design, develop, and test software solutions Collaborate with cross-functional teams to define, design, and ship new features Strong programming skills in languages like Java, Python, or C++"
-# Company_Name = "Google"
-
-
 questions = ""
 conversation_log = []
 n = 0
@@ -50,8 +44,6 @@ conversation_user = ""
 timestamps = []
 next_question = ""
 system_prompt = ""
-# system_prompt = [  {"role": "system", "content": f"Hi GPT, you are  acting as an interviewer in this exercise. You are to interview me for {Position} at {Company_Name} with the job description posted as {job_description}. My resume is as follows:{resume}In This exercise you are  conducting my interview and current conversation log is as {conversation_log} if it is empty means it is first question,   Whenever, I would be conversing with you, the ChatGPT model and not as the interviewer,  After the interview, you are to assess me based on the following five aspects:Technical Skills: Assessing the candidate's proficiency in the specific technical skills required for the job. Behavioural Skills: Evaluating communication, teamwork, adaptability, and other interpersonal skills. Problem-Solving and Critical Thinking: Assessing analytical thinking, decision-making, and the ability to handle challenges. Cultural Fit: Examining alignment with the company's values, culture, and the ability to work within a team. Work Experience and Achievements: Reviewing past experiences, achievements, and contributions to understand the candidate's capabilities and potential impact. Hence, please note to ask questions such that all of these aspects can be evaluated and considered in the question set.  currently you have asked {n}  number of questions and the number of questions  should strictly not exceed 3, Once the questions exceed the limit. Simply respond with the following response: EXIT_0 at the start of the responce and greet the candidate and announce that interview is over and instruct him to wait for feedack" }]
-
 
 client = OpenAI(api_key='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')
 @app.route("/")
@@ -62,20 +54,6 @@ def home():
 import datetime
 @app.route("/start", methods=['POST'])
 def start_interview():
-    # def upload_file(file):
-    #     if file:
-    #         if file.filename.endswith('.pdf'):
-    #             reader = PyPDF2.PdfFileReader(file)
-    #             text = ''
-    #             for page in range(reader.getNumPages()):
-    #                 text += reader.getPage(page).extractText()
-    #             return text
-    #         elif file.filename.endswith('.docx'):
-    #             doc = Document(file)
-    #             text = ' '.join([paragraph.text for paragraph in doc.paragraphs])
-    #             return text
-
-    #     return 'No file uploaded'
 
     def upload_file(file):
         if file and file.filename:
@@ -94,12 +72,18 @@ def start_interview():
     name = request.form.get('name')
     job_title = request.form.get('job_title')
     job_description = request.form.get('job_description')
-    company_name = request.form.get('company_name')
     interviewer = request.form.get('interviewer')
     resume = upload_file(request.files.get('resume'))
-    print(resume)
+    
+    print(f"Name: {name}")
+    print(f"Job Title: {job_title}")
+    print(f"Job Description: {job_description}")
+    print(f"Interviewer: {interviewer}")
+    print(f"Resume: {resume}")
 
     global questions, n, conversation_log, system_prompt, timestamps, next_question
+    instructions = " "
+
     if interviewer.lower() == 'lalit':
         instrutions =   """
         Technical Skills (40%): Focus primarily on evaluating the candidate's technical proficiency. Ask detailed technical questions related to the job requirements, and provide scenarios to assess practical application.
@@ -127,7 +111,7 @@ def start_interview():
         Work Experience and Achievements (10%): Briefly discuss the candidate's past experiences to understand their overall impact and contributions.
         """
 
-    initial_prompt = interview_script = f"""
+    initial_prompt = f"""
     Hi ChatGPT, you are to act as an interviewer in this exercise and conduct my interviw as per the instructions {instructions}.  My resume is as follows:
 
     {resume}
